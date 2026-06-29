@@ -1,12 +1,19 @@
 # MSOfficeAuthors
 
-A cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
+A professional, cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
 
 Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **C# 12** standards, and **.NET 8**.
 
-Vibe coded by Gemini 3.5 Flash
+## 📥 Downloads
 
----
+Download the latest pre-built binaries for your platform:
+
+* 💻 **Windows x64:** [MSOfficeAuthors_Windows_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip) (Portable, no installation required)
+* 📱 **Windows ARM64:** [MSOfficeAuthors_Windows_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_ARM64.zip)
+* 🍎 **macOS Apple Silicon (M1/M2/M3):** [MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip)
+* 🖥️ **macOS Intel:** [MSOfficeAuthors_macOS_Intel_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_Intel_x64.zip)
+
+
 
 ## 🌟 Key Features
 
