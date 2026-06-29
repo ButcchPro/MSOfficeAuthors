@@ -1,8 +1,10 @@
 # MSOfficeAuthors
 
-A professional, cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
+A cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
 
 Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **C# 12** standards, and **.NET 8**.
+
+Vibe coded by Gemini-3.5-flash.
 
 ## 📥 Downloads
 
@@ -13,7 +15,21 @@ Download the latest pre-built binaries for your platform (portable, no installat
 * 🍎 **macOS Apple Silicon (M1/M2/M3):** [MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip)
 * 🖥️ **macOS Intel:** [MSOfficeAuthors_macOS_Intel_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_Intel_x64.zip)
 
+### ⚡ Quick Install & Run (via Terminal)
 
+You can download, extract, and launch the application in a single command:
+
+**Windows (PowerShell):**
+```powershell
+Invoke-WebRequest -Uri "https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip" -OutFile "app.zip"; Expand-Archive -Path "app.zip" -DestinationPath "MSOfficeAuthors" -Force; Remove-Item "app.zip"; Start-Process "MSOfficeAuthors\MSOfficeAuthors.exe"
+```
+
+**macOS Apple Silicon (Terminal):**
+```bash
+curl -L -o app.zip https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip && unzip app.zip -d MSOfficeAuthors && rm app.zip && chmod +x MSOfficeAuthors/MSOfficeAuthors.app/Contents/MacOS/MSOfficeAuthors && open MSOfficeAuthors/MSOfficeAuthors.app
+```
+
+---
 
 ## 🌟 Key Features
 
