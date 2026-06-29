@@ -1,60 +1,60 @@
 # MSOfficeAuthors
 
-Профессиональное кроссплатформенное Desktop-приложение для пакетного управления метаданными и авторами документов Microsoft Office.
+A professional, cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
 
-Разработано на платформе **Avalonia UI** с использованием паттерна **MVVM**, современных стандартов **C# 12** и **.NET 8**.
-
----
-
-## 🌟 Основные возможности
-
-* **Пакетная обработка:** Одновременная загрузка и обработка неограниченного количества документов Office.
-* **Поддержка форматов:** Работа с файлами Word (`.docx`), Excel (`.xlsx`) и PowerPoint (`.pptx`).
-* **Массовые действия:**
-  * Поиск конкретного автора среди всех документов и пакетная замена на новое имя.
-  * Полное удаление (очистка) имен авторов из метаданных всех загруженных файлов в один клик.
-* **Автономность:** Редактирование метаданных выполняется напрямую через **OpenXML SDK**. Установка Microsoft Office на компьютере **не требуется**.
-* **Премиальный интерфейс:**
-  * Современный минималистичный монохромный дизайн с эффектом стеклянных карточек (Glassmorphism).
-  * Поддержка двух тем оформления: светлой (в теплых пастельных тонах Quiet Light) и тёмной.
-  * Плавные микро-анимации и высокая скорость отклика интерфейса.
-  * Полностью асинхронное выполнение операций ввода-вывода (UI-поток никогда не блокируется).
+Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **C# 12** standards, and **.NET 8**.
 
 ---
 
-## 🏗️ Архитектура и технологии
+## 🌟 Key Features
 
-Проект построен по принципам чистой архитектуры и модульного MVVM:
-
-* **Avalonia UI & SukiUI:** Современный кроссплатформенный UI-фреймворк.
-* **CommunityToolkit.Mvvm:** Генерация кода для команд и свойств (Source Generators), реактивное обновление данных.
-* **Microsoft.Extensions.DependencyInjection:** Полноценный контейнер внедрения зависимостей (DI) для сервисов и ViewModels.
-* **DocumentFormat.OpenXml:** Быстрое и безопасное редактирование структуры документов без запуска тяжелых процессов Office.
-
-### Структура проекта:
-* [Models/](file:///D:/AI%20Agent/MSOfficeAuthors/Models) — бизнес-модели данных (записи об авторах [AuthorEntry.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Models/AuthorEntry.cs)).
-* [Services/](file:///D:/AI%20Agent/MSOfficeAuthors/Services) — сервисный слой для работы с файловой системой и OpenXML ([OfficeService.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Services/OfficeService.cs), [AuthorService.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Services/AuthorService.cs)).
-* [ViewModels/](file:///D:/AI%20Agent/MSOfficeAuthors/ViewModels) — логика управления состоянием представления ([MainViewModel.cs](file:///D:/AI%20Agent/MSOfficeAuthors/ViewModels/MainViewModel.cs)).
-* [MainWindow.axaml](file:///D:/AI%20Agent/MSOfficeAuthors/MainWindow.axaml) — декларативная XAML-разметка интерфейса.
+* **Batch Processing:** Load and process an unlimited number of Office documents simultaneously.
+* **Supported Formats:** Edit Word (`.docx`), Excel (`.xlsx`), and PowerPoint (`.pptx`) files.
+* **Mass Actions:**
+  * Find a specific author across all loaded documents and replace their name in one click.
+  * Completely clear/delete author metadata from all loaded files instantly.
+* **Standalone Execution:** Metadata editing is performed directly via the **OpenXML SDK**. Microsoft Office installation on the host machine **is not required**.
+* **Premium User Interface:**
+  * Modern, minimalist, monochrome design featuring a clean glassmorphism card layout.
+  * Support for both Light (warm pastel "Quiet Light" palette) and Dark themes.
+  * Smooth micro-animations and highly responsive UI controls.
+  * Fully asynchronous I/O operations (the UI thread never freezes).
 
 ---
 
-## 🚀 Как запустить
+## 🏗️ Architecture & Technologies
 
-### Требования
-* Установленный [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+The project adheres to Clean Architecture and modular MVVM principles:
 
-### Запуск приложения
-1. Склонируйте репозиторий:
+* **Avalonia UI & SukiUI:** Modern cross-platform UI framework and theme library.
+* **CommunityToolkit.Mvvm:** Code generation for commands and properties (Source Generators) and reactive UI updates.
+* **Microsoft.Extensions.DependencyInjection:** Fully-featured dependency injection (DI) container for services and ViewModels.
+* **DocumentFormat.OpenXml:** High-performance, safe editing of Office document structures without running heavy Office processes.
+
+### Project Structure:
+* [Models/](file:///D:/AI%20Agent/MSOfficeAuthors/Models) — Data models (metadata entries: [AuthorEntry.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Models/AuthorEntry.cs)).
+* [Services/](file:///D:/AI%20Agent/MSOfficeAuthors/Services) — Service layer for file operations and OpenXML interactions ([OfficeService.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Services/OfficeService.cs), [AuthorService.cs](file:///D:/AI%20Agent/MSOfficeAuthors/Services/AuthorService.cs)).
+* [ViewModels/](file:///D:/AI%20Agent/MSOfficeAuthors/ViewModels) — Presentation state logic ([MainViewModel.cs](file:///D:/AI%20Agent/MSOfficeAuthors/ViewModels/MainViewModel.cs)).
+* [MainWindow.axaml](file:///D:/AI%20Agent/MSOfficeAuthors/MainWindow.axaml) — Declarative XAML UI layout.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+* [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) installed on your machine.
+
+### Running the Application
+1. Clone the repository:
    ```bash
    git clone https://github.com/ButcchPro/MSOfficeAuthors.git
    cd MSOfficeAuthors
    ```
-2. Выполните сборку проекта:
+2. Build the project:
    ```bash
    dotnet build
    ```
-3. Запустите приложение:
+3. Run the application:
    ```bash
    dotnet run
    ```
