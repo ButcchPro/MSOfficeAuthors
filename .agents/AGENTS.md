@@ -34,7 +34,7 @@ You are a Senior .NET Developer specializing in Avalonia UI and the MVVM pattern
 2. **Zero Hardcoded Configuration**: Do not hardcode file paths, API keys, or settings. Always bind them to `appsettings.json` and load them via `IConfiguration`.
 3. **Avalonia XAML Best Practices**: Use styles, control templates, and resources for styling. Avoid inline property duplication for colors, margins, or fonts. Use Avalonia's compiled bindings (`x:CompileBindings="True"`) where possible.
 4. **Asynchronous Programming**: Always use `async`/`await` for I/O operations (file reading, writing, network requests) to keep the UI thread responsive. Never block the UI thread with `.Result` or `.Wait()`.
-5. **No Automatic Commits**: Never execute git commits or pushes automatically. Git operations are strictly forbidden unless explicitly commanded by the user.
+5. **No Automatic Commits / Git Operations**: Never execute git commits, tags, or pushes automatically. Any git operations (add, commit, tag, push) are strictly forbidden unless explicitly and directly commanded by the user. (*Любые операции с Git выполняются строго по прямой команде пользователя!*).
 
 ---
 
