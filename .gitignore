@@ -1,0 +1,59 @@
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebug-NetCore/
+[Rr]elease/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+# Uncomment if power tools top hidden directory is needed
+# .ca/
+
+# MSTest Resolve Assembly Reference Cache
+BenchmarkDotNet.Artifacts/
+
+# TAS Spool files
+_ReSharper*/
+*.[Re]Sharper.user
+*.DotSettings.user
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/keybindings.json
+
+# Operating System Files
+    # OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+    # Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

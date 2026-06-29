@@ -1,0 +1,176 @@
+<suki:SukiWindow xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:MSOfficeAuthors.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:suki="clr-namespace:SukiUI.Controls;assembly=SukiUI"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"
+        x:Class="MSOfficeAuthors.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="avares://MSOfficeAuthors/app_icon.ico"
+        Title="MS Office Authors"
+        WindowStartupLocation="CenterScreen"
+        FontSize="12"
+        Width="1100" Height="700">
+
+    <suki:SukiWindow.Styles>
+        <!-- Общие стили для заголовка -->
+        <Style Selector="suki|SukiWindow /template/ TextBlock#PART_TitleTextBlock">
+            <Setter Property="FontSize" Value="21"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Универсальные стили, работающие через ThemeDictionaries -->
+        <Style Selector="suki|SukiWindow">
+            <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Padding" Value="15,8" />
+            <Setter Property="BorderThickness" Value="1.2" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
+            <Setter Property="Background" Value="#08FFFFFF" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button:pointerover">
+            <Setter Property="RenderTransform" Value="scale(1.02)" />
+        </Style>
+
+        <Style Selector="Button:pointerover /template/ ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiAccentColor}" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <Style Selector="Button:pressed">
+            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        </Style>
+
+        <Style Selector="suki|GlassCard">
+            <Setter Property="Background" Value="{DynamicResource CustomGlassBackground}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="12"/>
+        </Style>
+    </suki:SukiWindow.Styles>
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+
+    <Grid Classes="MainContent" Margin="16" RowDefinitions="Auto, Auto, *, Auto">
+        
+        <!-- Header / Toolbar -->
+        <suki:GlassCard Grid.Row="0" Margin="0,0,0,15" CornerRadius="12">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="15">
+                    <Button Command="{Binding AddFilesCommand}" 
+                            Content="Добавить файлы" />
+                    <Button Command="{Binding SaveCommand}" 
+                            Content="Сохранить изменения" />
+                    <Button Command="{Binding ClearCommand}" 
+                            Content="Очистить" />
+                </StackPanel>
+                
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                     <!-- Кнопка переключения темы удалена, т.к. оставлена только темная тема -->
+                </StackPanel>
+            </DockPanel>
+        </suki:GlassCard>
+
+        <!-- Mass Replace Section -->
+        <suki:GlassCard Grid.Row="1" Margin="0,0,0,12" CornerRadius="10" Padding="16">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Массовые действия" FontSize="15" FontWeight="SemiBold"/>
+                <Grid ColumnDefinitions="*, *, 160" RowDefinitions="Auto, Auto" HorizontalAlignment="Stretch">
+                    <!-- Заголовки -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Найти:" FontSize="12" Opacity="0.7" VerticalAlignment="Bottom" Margin="0,0,8,4"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Заменить на:" FontSize="12" Opacity="0.7" VerticalAlignment="Bottom" Margin="0,0,8,4"/>
+                    
+                    <!-- Кнопка "Удалить всё" строго над кнопкой "Заменить всё" -->
+                    <Button Grid.Row="0" Grid.Column="2" 
+                            Height="36"
+                            Margin="0,0,0,8"
+                            HorizontalAlignment="Stretch"
+                            Content="Удалить всё" 
+                            Command="{Binding DeleteAllCommand}" />
+
+                    <!-- Основная строка действий -->
+                    <ComboBox Grid.Row="1" Grid.Column="0" 
+                              Height="36"
+                              Margin="0,0,8,0"
+                              HorizontalAlignment="Stretch"
+                              SelectedItem="{Binding MassReplaceFrom}" 
+                              ItemsSource="{Binding UniqueOriginalAuthors}" 
+                              PlaceholderText="Выберите имя..."/>
+
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             Height="36"
+                             Margin="0,0,8,0"
+                             HorizontalAlignment="Stretch"
+                             VerticalContentAlignment="Center"
+                             Text="{Binding MassReplaceTo}" 
+                             Watermark="Новое имя..."/>
+
+                    <Button Grid.Row="1" Grid.Column="2" 
+                            Height="36"
+                            HorizontalAlignment="Stretch"
+                            Content="Заменить всё" 
+                            Command="{Binding MassReplaceCommand}" />
+                </Grid>
+            </StackPanel>
+        </suki:GlassCard>
+
+        <!-- Main Data Table -->
+        <suki:GlassCard Grid.Row="2" Padding="0" CornerRadius="12">
+            <Grid>
+                <DataGrid ItemsSource="{Binding Entries}" 
+                          AutoGenerateColumns="False" 
+                          CanUserReorderColumns="True" 
+                          CanUserResizeColumns="True" 
+                          CanUserSortColumns="True"
+                          GridLinesVisibility="None"
+                          BorderThickness="0"
+                          Background="Transparent">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Файл" Binding="{Binding FileName}" IsReadOnly="True" Width="250"/>
+                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" IsReadOnly="True" Width="100"/>
+                        <DataGridTextColumn Header="Оригинальное имя" Binding="{Binding OriginalAuthorName}" IsReadOnly="True" Width="1.5*"/>
+                        <DataGridTextColumn Header="Новое имя" Binding="{Binding NewAuthorName}" Width="2*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                
+                <!-- Empty State -->
+                <StackPanel VerticalAlignment="Center" 
+                            HorizontalAlignment="Center" 
+                            IsVisible="{Binding IsEmpty}"
+                            Spacing="10">
+                    <TextBlock Text="Нет загруженных файлов" 
+                               HorizontalAlignment="Center" 
+                               FontSize="18" 
+                               Opacity="0.5"/>
+                    <TextBlock Text="Нажмите 'Добавить файлы', чтобы начать" 
+                               HorizontalAlignment="Center" 
+                               FontSize="14" 
+                               Opacity="0.3"/>
+                </StackPanel>
+            </Grid>
+        </suki:GlassCard>
+
+        <!-- Footer / Status Bar -->
+        <Grid Grid.Row="3" Margin="0,15,0,0" ColumnDefinitions="*, Auto">
+            <TextBlock Grid.Column="0" 
+                       Text="{Binding StatusText}" 
+                       VerticalAlignment="Center" 
+                       Opacity="0.8" 
+                       FontStyle="Italic"/>
+        </Grid>
+    </Grid>
+</suki:SukiWindow>

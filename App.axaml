@@ -1,0 +1,64 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:MSOfficeAuthors"
+             xmlns:sukiUi="clr-namespace:SukiUI;assembly=SukiUI"
+             x:Class="MSOfficeAuthors.App"
+             RequestedThemeVariant="Dark">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <sukiUi:SukiTheme ThemeColor="Blue" />
+        
+        <Style Selector="TextBox">
+            <Setter Property="SelectionBrush" Value="#662196F3"/>
+            <Setter Property="SelectionForegroundBrush" Value="White"/>
+        </Style>
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <LinearGradientBrush x:Key="AppBackgroundBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#F0F7FF" />
+                        <GradientStop Offset="1" Color="#E8F2FF" />
+                    </LinearGradientBrush>
+
+                    <LinearGradientBrush x:Key="CustomPrimaryBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#FFFFFF" />
+                        <GradientStop Offset="0.1" Color="#E6F2FF" />
+                        <GradientStop Offset="0.5" Color="#D9EAFF" />
+                        <GradientStop Offset="1" Color="#C7E3FF" />
+                    </LinearGradientBrush>
+
+                    <LinearGradientBrush x:Key="CustomAccentBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#9EC5FF" />
+                        <GradientStop Offset="1" Color="#4A90E2" />
+                    </LinearGradientBrush>
+
+                    <SolidColorBrush x:Key="CustomButtonForeground" Color="#2C3E50" />
+                    <SolidColorBrush x:Key="CustomAccentForeground" Color="#2C3E50" />
+                    <SolidColorBrush x:Key="CustomGlassBackground" Color="#CCFFFFFF" />
+                    <SolidColorBrush x:Key="CustomTitleColor" Color="#1A2D40" />
+                </ResourceDictionary>
+
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
+                    <!-- Используем конкретные значения цветов Suki Blue (Primary) -->
+                    <SolidColorBrush x:Key="CustomPrimaryBrush" Color="#2F5BE7" /> 
+                    <SolidColorBrush x:Key="CustomAccentBrush" Color="#4A90E2" />
+
+                    <SolidColorBrush x:Key="CustomButtonForeground" Color="White" />
+                    <SolidColorBrush x:Key="CustomAccentForeground" Color="White" />
+                    <SolidColorBrush x:Key="CustomGlassBackground" Color="#22FFFFFF" />
+                    <SolidColorBrush x:Key="CustomTitleColor" Color="White" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
