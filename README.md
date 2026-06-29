@@ -1,6 +1,8 @@
 # MSOfficeAuthors
 
-A cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A professional, cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
 
 Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **C# 12** standards, and **.NET 8**.
 
