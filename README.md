@@ -17,16 +17,26 @@ Download the latest pre-built binaries for your platform (portable, no installat
 
 ### ⚡ Quick Install & Run (via Terminal)
 
-You can download, extract, and launch the application in a single command:
+You can download, extract, and launch the application in a single command depending on your platform:
 
-**Windows (PowerShell):**
+**Windows x64 (Intel/AMD):**
 ```powershell
 Invoke-WebRequest -Uri "https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip" -OutFile "app.zip"; Expand-Archive -Path "app.zip" -DestinationPath "MSOfficeAuthors" -Force; Remove-Item "app.zip"; Start-Process "MSOfficeAuthors\MSOfficeAuthors.exe"
 ```
 
-**macOS Apple Silicon (Terminal):**
+**Windows ARM64:**
+```powershell
+Invoke-WebRequest -Uri "https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_ARM64.zip" -OutFile "app.zip"; Expand-Archive -Path "app.zip" -DestinationPath "MSOfficeAuthors" -Force; Remove-Item "app.zip"; Start-Process "MSOfficeAuthors\MSOfficeAuthors.exe"
+```
+
+**macOS Apple Silicon (M1/M2/M3):**
 ```bash
 curl -L -o app.zip https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip && unzip app.zip -d MSOfficeAuthors && rm app.zip && chmod +x MSOfficeAuthors/MSOfficeAuthors.app/Contents/MacOS/MSOfficeAuthors && open MSOfficeAuthors/MSOfficeAuthors.app
+```
+
+**macOS Intel (x64):**
+```bash
+curl -L -o app.zip https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_Intel_x64.zip && unzip app.zip -d MSOfficeAuthors && rm app.zip && chmod +x MSOfficeAuthors/MSOfficeAuthors.app/Contents/MacOS/MSOfficeAuthors && open MSOfficeAuthors/MSOfficeAuthors.app
 ```
 
 ---
