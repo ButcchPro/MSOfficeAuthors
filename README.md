@@ -6,9 +6,9 @@ Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **
 
 ## 📥 Downloads
 
-Download the latest pre-built binaries for your platform:
+Download the latest pre-built binaries for your platform ((Portable, no installation required)):
 
-* 💻 **Windows x64:** [MSOfficeAuthors_Windows_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip) (Portable, no installation required)
+* 💻 **Windows x64:** [MSOfficeAuthors_Windows_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip)
 * 📱 **Windows ARM64:** [MSOfficeAuthors_Windows_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_ARM64.zip)
 * 🍎 **macOS Apple Silicon (M1/M2/M3):** [MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_AppleSilicon_ARM64.zip)
 * 🖥️ **macOS Intel:** [MSOfficeAuthors_macOS_Intel_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_macOS_Intel_x64.zip)
