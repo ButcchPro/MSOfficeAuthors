@@ -1,8 +1,10 @@
 # MSOfficeAuthors
 
-A professional, cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
+A cross-platform desktop application for batch metadata and author management in Microsoft Office documents.
 
 Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **C# 12** standards, and **.NET 8**.
+
+Vibe coded by Gemini 3.5 Flash
 
 ---
 
@@ -14,7 +16,7 @@ Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **
   * Find a specific author across all loaded documents and replace their name in one click.
   * Completely clear/delete author metadata from all loaded files instantly.
 * **Standalone Execution:** Metadata editing is performed directly via the **OpenXML SDK**. Microsoft Office installation on the host machine **is not required**.
-* **Premium User Interface:**
+* **Modern User Interface:**
   * Modern, minimalist, monochrome design featuring a clean glassmorphism card layout.
   * Support for both Light (warm pastel "Quiet Light" palette) and Dark themes.
   * Smooth micro-animations and highly responsive UI controls.
