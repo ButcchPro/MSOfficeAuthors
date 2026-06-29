@@ -14,10 +14,10 @@ namespace MSOfficeAuthors.Models
         [ObservableProperty]
         private string _newAuthorName = string.Empty;
         
-        public string FilePath { get; set; } = string.Empty;
+        public required string FilePath { get; set; }
         public string FileName => System.IO.Path.GetFileName(FilePath) ?? string.Empty;
-        public EntityType Type { get; set; }
-        public string OriginalAuthorName { get; set; } = string.Empty;
+        public required EntityType Type { get; set; }
+        public required string OriginalAuthorName { get; set; }
         
         public object? UnderlyingObject { get; set; }
     }

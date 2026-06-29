@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using MSOfficeAuthors.ViewModels;
-using SukiUI;
 using SukiUI.Controls;
 
 namespace MSOfficeAuthors;
@@ -21,6 +18,8 @@ public partial class MainWindow : SukiWindow
     public MainWindow(MainViewModel viewModel) : this()
     {
         DataContext = viewModel;
+        viewModel.FilePickerAsync = ShowOpenFileDialogAsync;
+        viewModel.MessageBoxAsync = ShowMessageBoxAsync;
     }
 
     protected override void OnDataContextChanged(System.EventArgs e)
@@ -40,14 +39,14 @@ public partial class MainWindow : SukiWindow
         {
             Title = "Выберите файлы Office",
             AllowMultiple = true,
-            FileTypeFilter = new[]
-            {
-                new FilePickerFileType("Office Files") { Patterns = new[] { "*.docx", "*.xlsx", "*.pptx" } },
-                new FilePickerFileType("All files") { Patterns = new[] { "*.*" } }
-            }
+            FileTypeFilter =
+            [
+                new FilePickerFileType("Office Files") { Patterns = ["*.docx", "*.xlsx", "*.pptx"] },
+                new FilePickerFileType("All files") { Patterns = ["*.*"] }
+            ]
         });
 
-        return files.Select(f => f.Path.LocalPath);
+        return files?.Select(f => f.Path.LocalPath) ?? System.Linq.Enumerable.Empty<string>();
     }
 
     private Task ShowMessageBoxAsync(string title, string message)

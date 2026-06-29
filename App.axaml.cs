@@ -3,12 +3,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MSOfficeAuthors.Services;
 using MSOfficeAuthors.ViewModels;
 using System;
-using System.IO;
 
 namespace MSOfficeAuthors;
 
@@ -101,17 +99,8 @@ public partial class App : Application
 
     private void ConfigureServices(IServiceCollection services)
     {
-        services.AddLogging(builder =>
-        {
-            builder.AddConsole();
-            builder.AddDebug();
-        });
-
-        services.AddSingleton<IOfficeService, OfficeService>();
-        services.AddSingleton<AuthorService>();
-        services.AddTransient<MainViewModelServices>();
-        services.AddTransient<MainViewModel>();
-        services.AddTransient<MainWindow>();
+        services.AddInfrastructureServices();
+        services.AddPresentationServices();
     }
 
     private void ConfigureMainWindow(IClassicDesktopStyleApplicationLifetime desktop)

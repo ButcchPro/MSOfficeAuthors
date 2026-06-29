@@ -15,14 +15,9 @@ using Microsoft.Extensions.Logging;
 
 namespace MSOfficeAuthors.Services
 {
-    public class OfficeService : IOfficeService
+    public class OfficeService(ILogger<OfficeService> logger) : IOfficeService
     {
-        private readonly ILogger<OfficeService> _logger;
-
-        public OfficeService(ILogger<OfficeService> logger)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        private readonly ILogger<OfficeService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public void Dispose()
         {
@@ -35,7 +30,7 @@ namespace MSOfficeAuthors.Services
         {
             return await Task.Run(() =>
             {
-                var authors = new List<AuthorEntry>();
+                List<AuthorEntry> authors = [];
                 string extension = Path.GetExtension(filePath).ToLower();
 
                 try
@@ -49,9 +44,29 @@ namespace MSOfficeAuthors.Services
                         }
                     }
                 }
+                catch (FileNotFoundException ex)
+                {
+                    _logger.LogWarning(ex, "File not found during author retrieval: {FilePath}", filePath);
+                    throw;
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    _logger.LogError(ex, "Unauthorized access during author retrieval: {FilePath}", filePath);
+                    throw;
+                }
+                catch (InvalidDataException ex)
+                {
+                    _logger.LogError(ex, "Invalid or corrupted office document: {FilePath}", filePath);
+                    throw;
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "IO error during author retrieval: {FilePath}", filePath);
+                    throw;
+                }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Failed to retrieve authors from {FilePath}", filePath);
+                    _logger.LogError(ex, "Unexpected error retrieving authors from {FilePath}", filePath);
                     throw;
                 }
 
@@ -66,7 +81,7 @@ namespace MSOfficeAuthors.Services
                 WordprocessingDocument wordDoc => GetWordAuthors(wordDoc, filePath),
                 SpreadsheetDocument excelDoc => GetExcelAuthors(excelDoc, filePath),
                 PresentationDocument pptDoc => GetPptAuthors(pptDoc, filePath),
-                _ => new List<AuthorEntry>()
+                _ => []
             };
         }
 
@@ -84,9 +99,9 @@ namespace MSOfficeAuthors.Services
         private List<AuthorEntry> GetCoreProperties(OpenXmlPackage package, string filePath)
         {
             var props = package.PackageProperties;
-            if (props == null) return new List<AuthorEntry>();
+            if (props == null) return [];
 
-            return GetAuthors(filePath, EntityType.Property, new[] { props.Creator, props.LastModifiedBy });
+            return GetAuthors(filePath, EntityType.Property, [props.Creator, props.LastModifiedBy]);
         }
 
         private List<AuthorEntry> GetAuthors(string filePath, EntityType type, IEnumerable<string?> authors)
@@ -106,7 +121,7 @@ namespace MSOfficeAuthors.Services
 
         private List<AuthorEntry> GetWordAuthors(WordprocessingDocument doc, string filePath)
         {
-            var result = new List<AuthorEntry>();
+            List<AuthorEntry> result = [];
             if (doc.MainDocumentPart?.Document == null) return result;
 
             // Revisions
@@ -131,7 +146,7 @@ namespace MSOfficeAuthors.Services
 
         private List<AuthorEntry> GetExcelAuthors(SpreadsheetDocument doc, string filePath)
         {
-            var result = new List<AuthorEntry>();
+            List<AuthorEntry> result = [];
             if (doc.WorkbookPart == null) return result;
 
             // Comments in Excel (Legacy and modern)
@@ -150,7 +165,7 @@ namespace MSOfficeAuthors.Services
         private List<AuthorEntry> GetPptAuthors(PresentationDocument doc, string filePath)
         {
 
-            var result = new List<AuthorEntry>();
+            List<AuthorEntry> result = [];
             if (doc.PresentationPart == null) return result;
             var commentAuthorsPart = doc.PresentationPart.CommentAuthorsPart;
             if (commentAuthorsPart?.CommentAuthorList != null)
@@ -201,10 +216,20 @@ namespace MSOfficeAuthors.Services
                             }
                         }
                     }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        _logger.LogError(ex, "Access denied when saving changes to {FilePath}", filePath);
+                        throw;
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "IO error when saving changes to {FilePath}", filePath);
+                        throw;
+                    }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Error updating file {FilePath}", filePath);
-                        throw new IOException($"Error updating file {filePath}: {ex.Message}", ex);
+                        _logger.LogError(ex, "Unexpected error when saving changes to {FilePath}", filePath);
+                        throw new IOException($"Unexpected error updating file {filePath}: {ex.Message}", ex);
                     }
                 }
             });
@@ -273,32 +298,34 @@ namespace MSOfficeAuthors.Services
 
         private void UpdateAuthors<T>(IEnumerable<T> elements, Func<T, DocumentFormat.OpenXml.StringValue?> authorSelector, IEnumerable<AuthorEntry> entries, EntityType type)
         {
+            var lookup = entries
+                .Where(e => e.Type == type)
+                .GroupBy(e => e.OriginalAuthorName)
+                .ToDictionary(g => g.Key, g => g.First().NewAuthorName);
+
             foreach (var element in elements)
             {
                 var authorValue = authorSelector(element);
-                if (authorValue?.Value != null)
+                if (authorValue?.Value != null && lookup.TryGetValue(authorValue.Value, out var newName))
                 {
-                    var entry = entries.FirstOrDefault(e => e.Type == type && e.OriginalAuthorName == authorValue.Value);
-                    if (entry != null)
-                    {
-                        authorValue.Value = entry.NewAuthorName;
-                    }
+                    authorValue.Value = newName;
                 }
             }
         }
 
         private void UpdateAuthors<T>(IEnumerable<T> elements, Func<T, string?> authorGetter, Action<T, string> authorSetter, IEnumerable<AuthorEntry> entries, EntityType type)
         {
+            var lookup = entries
+                .Where(e => e.Type == type)
+                .GroupBy(e => e.OriginalAuthorName)
+                .ToDictionary(g => g.Key, g => g.First().NewAuthorName);
+
             foreach (var element in elements)
             {
                 var authorName = authorGetter(element);
-                if (authorName != null)
+                if (authorName != null && lookup.TryGetValue(authorName, out var newName))
                 {
-                    var entry = entries.FirstOrDefault(e => e.Type == type && e.OriginalAuthorName == authorName);
-                    if (entry != null)
-                    {
-                        authorSetter(element, entry.NewAuthorName);
-                    }
+                    authorSetter(element, newName);
                 }
             }
         }

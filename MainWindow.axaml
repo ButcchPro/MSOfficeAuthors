@@ -14,10 +14,11 @@
         Width="1100" Height="700">
 
     <suki:SukiWindow.Styles>
-        <!-- Общие стили для заголовка -->
+        <!-- Общие стили для заголовка окна -->
         <Style Selector="suki|SukiWindow /template/ TextBlock#PART_TitleTextBlock">
-            <Setter Property="FontSize" Value="21"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Opacity" Value="0.8"/>
         </Style>
 
         <!-- Универсальные стили, работающие через ThemeDictionaries -->
@@ -25,39 +26,124 @@
             <Setter Property="Background" Value="{DynamicResource AppBackgroundBrush}" />
         </Style>
 
-        <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="Padding" Value="15,8" />
-            <Setter Property="BorderThickness" Value="1.2" />
-            <Setter Property="BorderBrush" Value="{DynamicResource SukiPrimaryColor}" />
-            <Setter Property="Background" Value="#08FFFFFF" />
-            <Setter Property="Foreground" Value="White" />
+        <!-- Базовый стиль кнопок с кастомным шаблоном (отключает все анимации SukiUI) -->
+        <Style Selector="suki|SukiWindow Button">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiControlBorderBrush}" />
+            <Setter Property="Background" Value="{DynamicResource CustomButtonBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource CustomButtonForeground}" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="RenderTransform" Value="translateY(0)" />
             <Setter Property="Transitions">
                 <Transitions>
-                    <BrushTransition Property="BorderBrush" Duration="0:0:0.2"/>
-                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12"/>
                 </Transitions>
+            </Setter>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="PART_ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter x:Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          RecognizesAccessKey="True" />
+                    </Border>
+                </ControlTemplate>
             </Setter>
         </Style>
 
-        <Style Selector="Button:pointerover">
-            <Setter Property="RenderTransform" Value="scale(1.02)" />
+        <!-- Явно сбрасываем фон и привязываем передний план ContentPresenter во всех состояниях (фикс цвета текста и фона надписи) -->
+        <Style Selector="suki|SukiWindow Button /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
+        </Style>
+        <Style Selector="suki|SukiWindow Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding $parent[Button].Foreground}" />
         </Style>
 
-        <Style Selector="Button:pointerover /template/ ContentPresenter">
-            <Setter Property="BorderBrush" Value="{DynamicResource SukiAccentColor}" />
-            <Setter Property="Foreground" Value="White" />
+        <!-- Наведение на обычную кнопку (только подъем, без изменения цвета фона и текста) -->
+        <Style Selector="suki|SukiWindow Button:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource CustomButtonForeground}" />
+            <Setter Property="RenderTransform" Value="translateY(-1px)" />
         </Style>
 
-        <Style Selector="Button:pressed">
-            <Setter Property="RenderTransform" Value="scale(0.98)" />
+        <Style Selector="suki|SukiWindow Button:pointerover /template/ Border#PART_ButtonBorder">
+            <Setter Property="Background" Value="{DynamicResource CustomButtonBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource SukiControlBorderBrush}" />
         </Style>
 
+        <!-- Нажатие кнопки -->
+        <Style Selector="suki|SukiWindow Button:pressed">
+            <Setter Property="RenderTransform" Value="translateY(1px)" />
+        </Style>
+
+        <!-- Стили для акцентных/главных кнопок (Монохромные, без синего и зеленого) -->
+        <Style Selector="suki|SukiWindow Button.Primary">
+            <Setter Property="Background" Value="{DynamicResource CustomPrimaryButtonBackground}" />
+            <Setter Property="Foreground" Value="{DynamicResource CustomPrimaryButtonForeground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CustomPrimaryButtonBackground}" />
+        </Style>
+        
+        <Style Selector="suki|SukiWindow Button.Primary:pointerover">
+            <Setter Property="Foreground" Value="{DynamicResource CustomPrimaryButtonForeground}" />
+        </Style>
+
+        <Style Selector="suki|SukiWindow Button.Primary:pointerover /template/ Border#PART_ButtonBorder">
+            <Setter Property="Background" Value="{DynamicResource CustomPrimaryButtonBackground}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CustomPrimaryButtonBackground}" />
+        </Style>
+
+        <!-- Стили для опасных действий -->
+        <Style Selector="suki|SukiWindow Button.Danger">
+            <Setter Property="BorderBrush" Value="#E57373" />
+            <Setter Property="Foreground" Value="#D32F2F" />
+            <Setter Property="Background" Value="#0DFF3B30" />
+        </Style>
+        
+        <Style Selector="suki|SukiWindow Button.Danger:pointerover">
+            <Setter Property="Foreground" Value="#D32F2F" />
+        </Style>
+
+        <Style Selector="suki|SukiWindow Button.Danger:pointerover /template/ Border#PART_ButtonBorder">
+            <Setter Property="BorderBrush" Value="#D32F2F" />
+            <Setter Property="Background" Value="#0DFF3B30" />
+        </Style>
+
+        <!-- Стеклянные карточки -->
         <Style Selector="suki|GlassCard">
             <Setter Property="Background" Value="{DynamicResource CustomGlassBackground}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+        </Style>
+
+        <!-- Зебра-страйпинг для таблицы -->
+        <Style Selector="DataGridRow:nth-child(2n)">
+            <Setter Property="Background" Value="{DynamicResource CustomZebraBrush}" />
+        </Style>
+
+        <!-- Элементы управления в панели массовых действий -->
+        <Style Selector="Grid.MassActionGrid > Button, Grid.MassActionGrid > ComboBox, Grid.MassActionGrid > TextBox">
+            <Setter Property="Height" Value="38" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="Grid.MassActionGrid > TextBox">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <Style Selector="Grid.MassActionGrid > ComboBox">
+            <Setter Property="CornerRadius" Value="8" />
         </Style>
     </suki:SukiWindow.Styles>
 
@@ -65,71 +151,81 @@
         <vm:MainViewModel/>
     </Design.DataContext>
 
-    <Grid Classes="MainContent" Margin="16" RowDefinitions="Auto, Auto, *, Auto">
+    <Grid Classes="MainContent" Margin="24,16,24,20" RowDefinitions="Auto, Auto, Auto, *, Auto">
         
-        <!-- Header / Toolbar -->
-        <suki:GlassCard Grid.Row="0" Margin="0,0,0,15" CornerRadius="12">
+        <!-- ROW 0: Заголовок и переключатель темы -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,4,0,20">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="MS Office Authors" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource CustomTitleColor}"/>
+                <TextBlock Text="Профессиональный менеджер метаданных и авторов документов Office" FontSize="12" Opacity="0.5" FontWeight="Medium"/>
+            </StackPanel>
+            
+            <Button Grid.Column="1" 
+                    Command="{Binding ToggleThemeCommand}" 
+                    Content="{Binding ThemeToggleText}"
+                    Width="42" Height="42"
+                    Padding="0"
+                    CornerRadius="21"
+                    FontSize="18"
+                    ToolTip.Tip="Переключить тему оформления"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"/>
+        </Grid>
+        
+        <!-- ROW 1: Главная панель инструментов (Toolbar) -->
+        <suki:GlassCard Grid.Row="1" Margin="0,0,0,16" Padding="12">
             <DockPanel>
-                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="15">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="12">
                     <Button Command="{Binding AddFilesCommand}" 
-                            Content="Добавить файлы" />
+                            Content="➕  Добавить файлы" 
+                            Classes="Primary" />
                     <Button Command="{Binding SaveCommand}" 
-                            Content="Сохранить изменения" />
+                            Content="💾  Сохранить изменения" />
                     <Button Command="{Binding ClearCommand}" 
-                            Content="Очистить" />
-                </StackPanel>
-                
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                     <!-- Кнопка переключения темы удалена, т.к. оставлена только темная тема -->
+                            Content="🧹  Очистить список" />
                 </StackPanel>
             </DockPanel>
         </suki:GlassCard>
 
-        <!-- Mass Replace Section -->
-        <suki:GlassCard Grid.Row="1" Margin="0,0,0,12" CornerRadius="10" Padding="16">
-            <StackPanel Spacing="8">
-                <TextBlock Text="Массовые действия" FontSize="15" FontWeight="SemiBold"/>
-                <Grid ColumnDefinitions="*, *, 160" RowDefinitions="Auto, Auto" HorizontalAlignment="Stretch">
+        <!-- ROW 2: Панель массовых действий -->
+        <suki:GlassCard Grid.Row="2" Margin="0,0,0,16" Padding="20,16">
+            <StackPanel Spacing="10">
+                <TextBlock Text="⚡ Массовые действия" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SukiPrimaryColorBrush}"/>
+                <Grid Classes="MassActionGrid" ColumnDefinitions="*, *, 180" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="8" HorizontalAlignment="Stretch">
                     <!-- Заголовки -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Найти:" FontSize="12" Opacity="0.7" VerticalAlignment="Bottom" Margin="0,0,8,4"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Заменить на:" FontSize="12" Opacity="0.7" VerticalAlignment="Bottom" Margin="0,0,8,4"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Найти исходного автора:" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Заменить на новое имя:" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
                     
-                    <!-- Кнопка "Удалить всё" строго над кнопкой "Заменить всё" -->
+                    <!-- Кнопка "Удалить всё" -->
                     <Button Grid.Row="0" Grid.Column="2" 
-                            Height="36"
-                            Margin="0,0,0,8"
                             HorizontalAlignment="Stretch"
-                            Content="Удалить всё" 
+                            Content="🗑️  Удалить все" 
+                            Classes="Danger"
                             Command="{Binding DeleteAllCommand}" />
 
                     <!-- Основная строка действий -->
                     <ComboBox Grid.Row="1" Grid.Column="0" 
-                              Height="36"
-                              Margin="0,0,8,0"
                               HorizontalAlignment="Stretch"
                               SelectedItem="{Binding MassReplaceFrom}" 
                               ItemsSource="{Binding UniqueOriginalAuthors}" 
-                              PlaceholderText="Выберите имя..."/>
+                              PlaceholderText="Выберите имя для замены..."/>
 
                     <TextBox Grid.Row="1" Grid.Column="1" 
-                             Height="36"
-                             Margin="0,0,8,0"
                              HorizontalAlignment="Stretch"
-                             VerticalContentAlignment="Center"
                              Text="{Binding MassReplaceTo}" 
-                             Watermark="Новое имя..."/>
+                             Watermark="Введите новое имя автора..."/>
 
                     <Button Grid.Row="1" Grid.Column="2" 
-                            Height="36"
                             HorizontalAlignment="Stretch"
-                            Content="Заменить всё" 
+                            Content="🔄  Заменить всё" 
+                            Classes="Primary"
                             Command="{Binding MassReplaceCommand}" />
                 </Grid>
             </StackPanel>
         </suki:GlassCard>
 
-        <!-- Main Data Table -->
-        <suki:GlassCard Grid.Row="2" Padding="0" CornerRadius="12">
+        <!-- ROW 3: Таблица данных -->
+        <suki:GlassCard Grid.Row="3" Padding="0" Margin="0,0,0,16">
             <Grid>
                 <DataGrid ItemsSource="{Binding Entries}" 
                           AutoGenerateColumns="False" 
@@ -138,39 +234,56 @@
                           CanUserSortColumns="True"
                           GridLinesVisibility="None"
                           BorderThickness="0"
+                          RowHeight="38"
                           Background="Transparent">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Файл" Binding="{Binding FileName}" IsReadOnly="True" Width="250"/>
+                        <DataGridTextColumn Header="Файл" Binding="{Binding FileName}" IsReadOnly="True" Width="280"/>
                         <DataGridTextColumn Header="Тип" Binding="{Binding Type}" IsReadOnly="True" Width="100"/>
                         <DataGridTextColumn Header="Оригинальное имя" Binding="{Binding OriginalAuthorName}" IsReadOnly="True" Width="1.5*"/>
                         <DataGridTextColumn Header="Новое имя" Binding="{Binding NewAuthorName}" Width="2*"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 
-                <!-- Empty State -->
+                <!-- Декоративное пустое состояние -->
                 <StackPanel VerticalAlignment="Center" 
                             HorizontalAlignment="Center" 
                             IsVisible="{Binding IsEmpty}"
-                            Spacing="10">
+                            Spacing="12">
+                    <TextBlock Text="📂" 
+                               HorizontalAlignment="Center" 
+                               FontSize="50" 
+                               Opacity="0.7"/>
                     <TextBlock Text="Нет загруженных файлов" 
                                HorizontalAlignment="Center" 
-                               FontSize="18" 
-                               Opacity="0.5"/>
-                    <TextBlock Text="Нажмите 'Добавить файлы', чтобы начать" 
+                               FontSize="16" 
+                               FontWeight="SemiBold"
+                               Opacity="0.8"/>
+                    <TextBlock Text="Нажмите кнопку 'Добавить файлы', чтобы начать работу с документами" 
                                HorizontalAlignment="Center" 
-                               FontSize="14" 
-                               Opacity="0.3"/>
+                               FontSize="12" 
+                               Opacity="0.5"/>
                 </StackPanel>
             </Grid>
         </suki:GlassCard>
 
-        <!-- Footer / Status Bar -->
-        <Grid Grid.Row="3" Margin="0,15,0,0" ColumnDefinitions="*, Auto">
-            <TextBlock Grid.Column="0" 
-                       Text="{Binding StatusText}" 
-                       VerticalAlignment="Center" 
-                       Opacity="0.8" 
-                       FontStyle="Italic"/>
-        </Grid>
+        <!-- ROW 4: Информационный статус-бар -->
+        <suki:GlassCard Grid.Row="4" Padding="14,10" CornerRadius="10">
+            <Grid ColumnDefinitions="*, Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <TextBlock Text="●" Foreground="#4CAF50" VerticalAlignment="Center" FontSize="11"/>
+                    <TextBlock Text="{Binding StatusText}" 
+                               VerticalAlignment="Center" 
+                               FontSize="12"
+                               FontWeight="Medium"
+                               Opacity="0.85"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" 
+                           Text="v1.0.0" 
+                           FontSize="11" 
+                           Opacity="0.4" 
+                           FontWeight="Medium"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </suki:GlassCard>
     </Grid>
 </suki:SukiWindow>

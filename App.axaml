@@ -24,36 +24,71 @@
         <ResourceDictionary>
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Light">
+                    <!-- Нежный теплый пастельный фон (Quiet Light / Solarized Light) -->
                     <LinearGradientBrush x:Key="AppBackgroundBrush" StartPoint="0%,0%" EndPoint="100%,100%">
-                        <GradientStop Offset="0" Color="#F0F7FF" />
-                        <GradientStop Offset="1" Color="#E8F2FF" />
+                        <GradientStop Offset="0" Color="#FDFBF7" />
+                        <GradientStop Offset="1" Color="#F4EFE6" />
                     </LinearGradientBrush>
+
+                    <!-- Переопределяем цвета SukiUI для светлой темы в теплых тонах -->
+                    <Color x:Key="SukiPrimaryColor">#2C3E50</Color> <!-- Темный сланец вместо зелени/синевы -->
+                    <Color x:Key="SukiAccentColor">#7F8C8D</Color>  <!-- Нейтральный серый вместо оранжевого -->
+                    <SolidColorBrush x:Key="SukiPrimaryColorBrush" Color="#2C3E50" />
+                    <SolidColorBrush x:Key="SukiAccentColorBrush" Color="#7F8C8D" />
+                    <SolidColorBrush x:Key="SukiLowProgress" Color="#7F8C8D" />
 
                     <LinearGradientBrush x:Key="CustomPrimaryBrush" StartPoint="0%,0%" EndPoint="0%,100%">
                         <GradientStop Offset="0" Color="#FFFFFF" />
-                        <GradientStop Offset="0.1" Color="#E6F2FF" />
-                        <GradientStop Offset="0.5" Color="#D9EAFF" />
-                        <GradientStop Offset="1" Color="#C7E3FF" />
+                        <GradientStop Offset="0.1" Color="#FDFBF7" />
+                        <GradientStop Offset="0.5" Color="#F5EFE6" />
+                        <GradientStop Offset="1" Color="#EAE3D5" />
                     </LinearGradientBrush>
 
                     <LinearGradientBrush x:Key="CustomAccentBrush" StartPoint="0%,0%" EndPoint="0%,100%">
-                        <GradientStop Offset="0" Color="#9EC5FF" />
-                        <GradientStop Offset="1" Color="#4A90E2" />
+                        <GradientStop Offset="0" Color="#E8DFD3" />
+                        <GradientStop Offset="1" Color="#C89D7C" />
                     </LinearGradientBrush>
 
                     <SolidColorBrush x:Key="CustomButtonForeground" Color="#2C3E50" />
+                    <SolidColorBrush x:Key="CustomButtonBackground" Color="#0D000000" />
+                    <SolidColorBrush x:Key="CustomButtonHoverBackground" Color="#1A000000" /> <!-- Нейтральный ховер -->
+                    <SolidColorBrush x:Key="CustomZebraBrush" Color="#05000000" />
+                    
+                    <!-- Первичные кнопки (Монохромные в светлой теме) -->
+                    <SolidColorBrush x:Key="CustomPrimaryButtonBackground" Color="#2C3E50" />
+                    <SolidColorBrush x:Key="CustomPrimaryButtonForeground" Color="White" />
+                    <SolidColorBrush x:Key="CustomPrimaryButtonHoverBackground" Color="#1B2A3A" />
+
+                    <SolidColorBrush x:Key="CustomDangerHoverBackground" Color="#D32F2F" />  <!-- Насыщенный красный для ховера -->
                     <SolidColorBrush x:Key="CustomAccentForeground" Color="#2C3E50" />
-                    <SolidColorBrush x:Key="CustomGlassBackground" Color="#CCFFFFFF" />
-                    <SolidColorBrush x:Key="CustomTitleColor" Color="#1A2D40" />
+                    <SolidColorBrush x:Key="CustomGlassBackground" Color="#E6FDFBF7" /> <!-- Теплый полупрозрачный белый -->
+                    <SolidColorBrush x:Key="CustomTitleColor" Color="#2C3E50" />
                 </ResourceDictionary>
 
                 <ResourceDictionary x:Key="Dark">
                     <SolidColorBrush x:Key="AppBackgroundBrush" Color="Transparent" />
-                    <!-- Используем конкретные значения цветов Suki Blue (Primary) -->
-                    <SolidColorBrush x:Key="CustomPrimaryBrush" Color="#2F5BE7" /> 
-                    <SolidColorBrush x:Key="CustomAccentBrush" Color="#4A90E2" />
+                    
+                    <!-- Переопределяем цвета SukiUI для темной темы в теплых тонах (полный монохром, без оранжевого/синего!) -->
+                    <Color x:Key="SukiPrimaryColor">#E5E5E5</Color> <!-- Светло-серый -->
+                    <Color x:Key="SukiAccentColor">#888888</Color>  <!-- Средне-серый -->
+                    <SolidColorBrush x:Key="SukiPrimaryColorBrush" Color="#E5E5E5" />
+                    <SolidColorBrush x:Key="SukiAccentColorBrush" Color="#888888" />
+                    <SolidColorBrush x:Key="SukiLowProgress" Color="#E5E5E5" />
+
+                    <SolidColorBrush x:Key="CustomPrimaryBrush" Color="#E5E5E5" /> 
+                    <SolidColorBrush x:Key="CustomAccentBrush" Color="#888888" />
 
                     <SolidColorBrush x:Key="CustomButtonForeground" Color="White" />
+                    <SolidColorBrush x:Key="CustomButtonBackground" Color="#08FFFFFF" />
+                    <SolidColorBrush x:Key="CustomButtonHoverBackground" Color="#15FFFFFF" /> <!-- Нейтральный ховер для темной темы -->
+                    <SolidColorBrush x:Key="CustomZebraBrush" Color="#05FFFFFF" />
+                    
+                    <!-- Первичные кнопки (Монохромные в темной теме) -->
+                    <SolidColorBrush x:Key="CustomPrimaryButtonBackground" Color="White" />
+                    <SolidColorBrush x:Key="CustomPrimaryButtonForeground" Color="#1A1A1A" />
+                    <SolidColorBrush x:Key="CustomPrimaryButtonHoverBackground" Color="#E5E5E5" />
+
+                    <SolidColorBrush x:Key="CustomDangerHoverBackground" Color="#D32F2F" />  <!-- Насыщенный красный для ховера -->
                     <SolidColorBrush x:Key="CustomAccentForeground" Color="White" />
                     <SolidColorBrush x:Key="CustomGlassBackground" Color="#22FFFFFF" />
                     <SolidColorBrush x:Key="CustomTitleColor" Color="White" />

@@ -8,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using MSOfficeAuthors.Models;
 using MSOfficeAuthors.Services;
 using Microsoft.Extensions.Logging;
-using Avalonia.Threading;
 
 namespace MSOfficeAuthors.ViewModels
 {
@@ -18,6 +17,12 @@ namespace MSOfficeAuthors.ViewModels
         
         [ObservableProperty]
         private ObservableCollection<AuthorEntry> _entries = new();
+
+        [ObservableProperty]
+        private bool _isDarkTheme = true;
+
+        [ObservableProperty]
+        private string _themeToggleText = "☀️";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(MassReplaceCommand))]
@@ -63,9 +68,11 @@ namespace MSOfficeAuthors.ViewModels
 
         private IEnumerable<AuthorEntry> GetUniqueEntries(IEnumerable<AuthorEntry> newEntries)
         {
-            return newEntries.Where(author => !Entries.Any(e => e.FilePath == author.FilePath &&
-                                                                e.Type == author.Type &&
-                                                                e.OriginalAuthorName == author.OriginalAuthorName));
+            var existingKeys = Entries
+                .Select(e => (e.FilePath, e.Type, e.OriginalAuthorName))
+                .ToHashSet();
+
+            return newEntries.Where(author => !existingKeys.Contains((author.FilePath, author.Type, author.OriginalAuthorName)));
         }
 
         [RelayCommand]
@@ -79,34 +86,13 @@ namespace MSOfficeAuthors.ViewModels
 
                 if (files != null && files.Any())
                 {
-                    var newEntries = new List<AuthorEntry>();
-                    var errors = new List<string>();
-
-                    var filesList = files.Where(file => !string.IsNullOrEmpty(file)).ToList();
-                    foreach (var file in filesList)
-                    {
-                        await ProcessFileAsync(file, newEntries, errors);
-                    }
-
-                    if (newEntries.Any())
-
-                    {
-                        var uniqueEntries = GetUniqueEntries(newEntries).ToList();
-
-                        if (uniqueEntries.Count > 0)
-                        {
-                            foreach (var author in uniqueEntries)
-                            {
-                                Entries.Add(author);
-                            }
-                        }
-                    }
+                    List<string> errors = [];
+                    await LoadFilesInternalAsync(files, clearExisting: false, errors);
 
                     UpdateStatus($"Загружено файлов: {LoadedFilesCount}. Всего записей: {Entries.Count}");
                     
                     if (errors.Any() && MessageBoxAsync != null)
                     {
-                        // Errors are already logged in ProcessFileAsync
                         await MessageBoxAsync("Предупреждение", string.Join("\n", errors.Take(5)) + (errors.Count > 5 ? "\n..." : ""));
                     }
                 }
@@ -114,6 +100,31 @@ namespace MSOfficeAuthors.ViewModels
             catch (Exception ex)
             {
                 await ReportErrorAsync(ex, "Ошибка при загрузке файлов");
+            }
+        }
+
+        private async Task LoadFilesInternalAsync(IEnumerable<string> filePaths, bool clearExisting, List<string> errors)
+        {
+            List<AuthorEntry> newEntries = [];
+            var filesList = filePaths.Where(file => !string.IsNullOrEmpty(file)).ToList();
+            
+            foreach (var file in filesList)
+            {
+                await ProcessFileAsync(file, newEntries, errors);
+            }
+
+            if (clearExisting)
+            {
+                Entries.Clear();
+            }
+
+            if (newEntries.Any())
+            {
+                var entriesToAdd = clearExisting ? newEntries : GetUniqueEntries(newEntries).ToList();
+                foreach (var author in entriesToAdd)
+                {
+                    Entries.Add(author);
+                }
             }
         }
 
@@ -132,20 +143,30 @@ namespace MSOfficeAuthors.ViewModels
                     entries.AddRange(fileAuthors);
                 }
             }
+            catch (System.IO.FileNotFoundException ex)
+            {
+                _services.Logger.LogWarning(ex, "File not found: {FilePath}", file);
+                errors.Add($"Файл не найден '{System.IO.Path.GetFileName(file)}'.");
+            }
+            catch (System.IO.InvalidDataException ex)
+            {
+                _services.Logger.LogError(ex, "Invalid or corrupted office file: {FilePath}", file);
+                errors.Add($"Файл '{System.IO.Path.GetFileName(file)}' поврежден или не является корректным документом Office.");
+            }
             catch (System.IO.IOException ex)
             {
                 _services.Logger.LogError(ex, "IO Error processing file {FilePath}", file);
-                errors.Add($"Ошибка доступа к файлу '{file}': {ex.Message}");
+                errors.Add($"Ошибка ввода-вывода при работе с файлом '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
             catch (UnauthorizedAccessException ex)
             {
                 _services.Logger.LogError(ex, "Access Denied processing file {FilePath}", file);
-                errors.Add($"Ошибка доступа к файлу '{file}': {ex.Message}");
+                errors.Add($"Ошибка доступа к файлу '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
             catch (Exception ex)
             {
                 _services.Logger.LogError(ex, "Error processing file {FilePath}", file);
-                errors.Add($"Ошибка обработки файла '{file}': {ex.Message}");
+                errors.Add($"Ошибка обработки файла '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
         }
 
@@ -168,19 +189,8 @@ namespace MSOfficeAuthors.ViewModels
                 await _services.OfficeService.SaveChangesAsync(Entries);
                 
                 // Reload files after saving
-                Entries.Clear();
-                var newEntries = new List<AuthorEntry>();
-                var errors = new List<string>();
-                
-                foreach (var file in filePaths)
-                {
-                    await ProcessFileAsync(file, newEntries, errors);
-                }
-                
-                foreach (var author in newEntries)
-                {
-                    Entries.Add(author);
-                }
+                List<string> errors = [];
+                await LoadFilesInternalAsync(filePaths, clearExisting: true, errors);
                 
                 if (errors.Any() && MessageBoxAsync != null)
                 {
@@ -202,34 +212,50 @@ namespace MSOfficeAuthors.ViewModels
         private bool CanSave() => Entries.Any();
 
         [RelayCommand(CanExecute = nameof(CanMassReplace))]
-        private async Task MassReplace()
+        private void MassReplace()
         {
             if (string.IsNullOrEmpty(MassReplaceFrom)) return;
             
-            await ReplaceAuthorsAsync(MassReplaceFrom, MassReplaceTo);
+            ReplaceAuthors(MassReplaceFrom, MassReplaceTo);
             
             UpdateStatus($"Заменено для '{MassReplaceFrom}'");
         }
 
         [RelayCommand(CanExecute = nameof(CanDeleteAll))]
-        private async Task DeleteAll()
+        private void DeleteAll()
         {
-            await Task.Run(() =>
+            foreach (var entry in Entries)
             {
-                foreach (var entry in Entries)
-                {
-                    entry.NewAuthorName = string.Empty;
-                }
-            });
+                entry.NewAuthorName = string.Empty;
+            }
             
             UpdateStatus("Все авторы помечены на удаление");
         }
 
         private bool CanDeleteAll() => Entries.Any();
 
-        private async Task ReplaceAuthorsAsync(string from, string to)
+        private void ReplaceAuthors(string from, string to)
         {
-            await _services.AuthorService.ReplaceAuthorsAsync(Entries, from, to);
+            _services.AuthorService.ReplaceAuthors(Entries, from, to);
+        }
+
+        [RelayCommand]
+        private void ToggleTheme()
+        {
+            if (Avalonia.Application.Current != null)
+            {
+                IsDarkTheme = !IsDarkTheme;
+                if (IsDarkTheme)
+                {
+                    ThemeToggleText = "☀️";
+                    Avalonia.Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Dark;
+                }
+                else
+                {
+                    ThemeToggleText = "🌙";
+                    Avalonia.Application.Current.RequestedThemeVariant = Avalonia.Styling.ThemeVariant.Light;
+                }
+            }
         }
 
         private async Task ReportErrorAsync(Exception ex, string context, List<string>? errors = null, bool showMessageBox = true)

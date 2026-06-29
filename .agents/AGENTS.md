@@ -65,7 +65,7 @@ You are a Senior .NET Developer specializing in Avalonia UI and the MVVM pattern
 
 ## 🔄 AI Agentic Development Workflow
 Every coding agent operating in this repository MUST strictly execute the following five-stage workflow for every task:
-1. **Initiation (Read Rules)**: Read `.github/copilot-instructions.md` before modifying any files.
+1. **Initiation (Read Rules)**: Read `.agents/AGENTS.md` before modifying any files.
 2. **Localization**: Identify the exact files (e.g., ViewModels, Views in XAML, Services) that need modification.
 3. **Coding**: Write surgical, clean C# and XAML code.
 4. **Verification**: Run `dotnet build` to ensure there are no compilation errors or warnings.
