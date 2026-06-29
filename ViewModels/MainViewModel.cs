@@ -16,13 +16,19 @@ namespace MSOfficeAuthors.ViewModels
         private readonly MainViewModelServices _services;
         
         [ObservableProperty]
-        private ObservableCollection<AuthorEntry> _entries = new();
+        private ObservableCollection<AuthorEntry> _entries = [];
 
         [ObservableProperty]
         private bool _isDarkTheme = true;
 
         [ObservableProperty]
         private string _themeToggleText = "☀️";
+
+        [ObservableProperty]
+        private string _currentLanguage = "RU"; // "RU" or "EN"
+
+        [ObservableProperty]
+        private string _langToggleText = "RU";
 
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(MassReplaceCommand))]
@@ -43,11 +49,55 @@ namespace MSOfficeAuthors.ViewModels
 
         public int LoadedFilesCount => Entries.Select(e => e.FilePath).Distinct().Count();
 
+        public string AppVersion
+        {
+            get
+            {
+                var version = typeof(MainViewModel).Assembly.GetName().Version;
+                return version != null 
+                    ? $"v{version.Major}.{version.Minor}.{version.Build}" 
+                    : "v1.0.1";
+            }
+        }
+
+        private bool IsEnglish => CurrentLanguage == "EN";
+
+        #region Localized Strings
+
+        public string L10nSubtitle => IsEnglish 
+            ? "Professional manager for Microsoft Office document metadata and authors" 
+            : "Профессиональный менеджер метаданных и авторов документов Office";
+
+        public string L10nAddFiles => IsEnglish ? "➕  Add Files" : "➕  Добавить файлы";
+        public string L10nSaveChanges => IsEnglish ? "💾  Save Changes" : "💾  Сохранить изменения";
+        public string L10nClearList => IsEnglish ? "🧹  Clear List" : "🧹  Очистить список";
+        public string L10nMassActions => IsEnglish ? "⚡ Mass Actions" : "⚡ Массовые действия";
+        public string L10nFindOriginal => IsEnglish ? "Find original author:" : "Найти исходного автора:";
+        public string L10nReplaceWith => IsEnglish ? "Replace with new name:" : "Заменить на новое имя:";
+        public string L10nDeleteAll => IsEnglish ? "🗑  Delete All" : "🗑  Удалить все";
+        public string L10nReplaceAll => IsEnglish ? "🔄  Replace All" : "🔄  Заменить всё";
+        public string L10nHeaderFile => IsEnglish ? "File" : "Файл";
+        public string L10nHeaderType => IsEnglish ? "Type" : "Тип";
+        public string L10nHeaderOriginal => IsEnglish ? "Original Author" : "Оригинальное имя";
+        public string L10nHeaderNew => IsEnglish ? "New Author" : "Новое имя";
+        public string L10nNoFiles => IsEnglish ? "No files loaded" : "Нет загруженных файлов";
+        public string L10nNoFilesHint => IsEnglish 
+            ? "Click the 'Add Files' button to start working with documents" 
+            : "Нажмите кнопку 'Добавить файлы', чтобы начать работу с документами";
+        
+        public string L10nPlaceholderSelect => IsEnglish ? "Select name to replace..." : "Выберите имя для замены...";
+        public string L10nWatermarkNewName => IsEnglish ? "Enter new author name..." : "Введите новое имя автора...";
+        public string L10nTooltipTheme => IsEnglish ? "Toggle theme" : "Переключить тему оформления";
+        public string L10nTooltipLanguage => IsEnglish ? "Toggle language (RU/EN)" : "Переключить язык (RU/EN)";
+
+        #endregion
+
         public MainViewModel(MainViewModelServices services)
         {
             _services = services;
 
             Entries.CollectionChanged += OnEntriesCollectionChanged;
+            _statusText = IsEnglish ? "Ready" : "Готов";
         }
 
         private void UpdateStatus(string message, bool isError = false)
@@ -76,6 +126,64 @@ namespace MSOfficeAuthors.ViewModels
         }
 
         [RelayCommand]
+        private void ToggleLanguage()
+        {
+            CurrentLanguage = CurrentLanguage == "RU" ? "EN" : "RU";
+            LangToggleText = CurrentLanguage;
+            
+            // Notify all localization properties changed
+            OnPropertyChanged(nameof(L10nSubtitle));
+            OnPropertyChanged(nameof(L10nAddFiles));
+            OnPropertyChanged(nameof(L10nSaveChanges));
+            OnPropertyChanged(nameof(L10nClearList));
+            OnPropertyChanged(nameof(L10nMassActions));
+            OnPropertyChanged(nameof(L10nFindOriginal));
+            OnPropertyChanged(nameof(L10nReplaceWith));
+            OnPropertyChanged(nameof(L10nDeleteAll));
+            OnPropertyChanged(nameof(L10nReplaceAll));
+            OnPropertyChanged(nameof(L10nHeaderFile));
+            OnPropertyChanged(nameof(L10nHeaderType));
+            OnPropertyChanged(nameof(L10nHeaderOriginal));
+            OnPropertyChanged(nameof(L10nHeaderNew));
+            OnPropertyChanged(nameof(L10nNoFiles));
+            OnPropertyChanged(nameof(L10nNoFilesHint));
+            OnPropertyChanged(nameof(L10nPlaceholderSelect));
+            OnPropertyChanged(nameof(L10nWatermarkNewName));
+            OnPropertyChanged(nameof(L10nTooltipTheme));
+            OnPropertyChanged(nameof(L10nTooltipLanguage));
+
+            // Update status text
+            if (StatusText == "Готов" || StatusText == "Ready")
+            {
+                UpdateStatus(IsEnglish ? "Ready" : "Готов");
+            }
+            else if (StatusText == "Список очищен" || StatusText == "List cleared")
+            {
+                UpdateStatus(IsEnglish ? "List cleared" : "Список очищен");
+            }
+            else if (StatusText == "Изменения сохранены" || StatusText == "Changes saved")
+            {
+                UpdateStatus(IsEnglish ? "Changes saved" : "Изменения сохранены");
+            }
+            else if (StatusText == "Все авторы помечены на удаление" || StatusText == "All authors marked for deletion")
+            {
+                UpdateStatus(IsEnglish ? "All authors marked for deletion" : "Все авторы помечены на удаление");
+            }
+            else if (StatusText.StartsWith("Загружено файлов") || StatusText.StartsWith("Loaded files"))
+            {
+                UpdateStatus(IsEnglish 
+                    ? $"Loaded files: {LoadedFilesCount}. Total entries: {Entries.Count}" 
+                    : $"Загружено файлов: {LoadedFilesCount}. Всего записей: {Entries.Count}");
+            }
+            else if (StatusText.StartsWith("Заменено для") || StatusText.StartsWith("Replaced for"))
+            {
+                UpdateStatus(IsEnglish 
+                    ? $"Replaced for '{MassReplaceFrom}'" 
+                    : $"Заменено для '{MassReplaceFrom}'");
+            }
+        }
+
+        [RelayCommand]
         private async Task AddFilesAsync()
         {
             if (FilePickerAsync == null) return;
@@ -89,17 +197,21 @@ namespace MSOfficeAuthors.ViewModels
                     List<string> errors = [];
                     await LoadFilesInternalAsync(files, clearExisting: false, errors);
 
-                    UpdateStatus($"Загружено файлов: {LoadedFilesCount}. Всего записей: {Entries.Count}");
+                    UpdateStatus(IsEnglish 
+                        ? $"Loaded files: {LoadedFilesCount}. Total entries: {Entries.Count}" 
+                        : $"Загружено файлов: {LoadedFilesCount}. Всего записей: {Entries.Count}");
                     
                     if (errors.Any() && MessageBoxAsync != null)
                     {
-                        await MessageBoxAsync("Предупреждение", string.Join("\n", errors.Take(5)) + (errors.Count > 5 ? "\n..." : ""));
+                        await MessageBoxAsync(
+                            IsEnglish ? "Warning" : "Предупреждение", 
+                            string.Join("\n", errors.Take(5)) + (errors.Count > 5 ? "\n..." : ""));
                     }
                 }
             }
             catch (Exception ex)
             {
-                await ReportErrorAsync(ex, "Ошибка при загрузке файлов");
+                await ReportErrorAsync(ex, IsEnglish ? "Error loading files" : "Ошибка при загрузке файлов");
             }
         }
 
@@ -128,7 +240,6 @@ namespace MSOfficeAuthors.ViewModels
             }
         }
 
-
         private async Task ProcessFileAsync(string file, List<AuthorEntry> entries, List<string> errors)
         {
             try
@@ -136,7 +247,9 @@ namespace MSOfficeAuthors.ViewModels
                 var fileAuthors = await _services.OfficeService.GetAuthorsAsync(file);
                 if (fileAuthors == null || !fileAuthors.Any())
                 {
-                    errors.Add($"В файле '{System.IO.Path.GetFileName(file)}' не найдено авторов.");
+                    errors.Add(IsEnglish 
+                        ? $"No authors found in file '{System.IO.Path.GetFileName(file)}'." 
+                        : $"В файле '{System.IO.Path.GetFileName(file)}' не найдено авторов.");
                 }
                 else
                 {
@@ -146,27 +259,37 @@ namespace MSOfficeAuthors.ViewModels
             catch (System.IO.FileNotFoundException ex)
             {
                 _services.Logger.LogWarning(ex, "File not found: {FilePath}", file);
-                errors.Add($"Файл не найден '{System.IO.Path.GetFileName(file)}'.");
+                errors.Add(IsEnglish 
+                    ? $"File not found '{System.IO.Path.GetFileName(file)}'." 
+                    : $"Файл не найден '{System.IO.Path.GetFileName(file)}'.");
             }
             catch (System.IO.InvalidDataException ex)
             {
                 _services.Logger.LogError(ex, "Invalid or corrupted office file: {FilePath}", file);
-                errors.Add($"Файл '{System.IO.Path.GetFileName(file)}' поврежден или не является корректным документом Office.");
+                errors.Add(IsEnglish 
+                    ? $"File '{System.IO.Path.GetFileName(file)}' is corrupted or not a valid Office document." 
+                    : $"Файл '{System.IO.Path.GetFileName(file)}' поврежден или не является корректным документом Office.");
             }
             catch (System.IO.IOException ex)
             {
                 _services.Logger.LogError(ex, "IO Error processing file {FilePath}", file);
-                errors.Add($"Ошибка ввода-вывода при работе с файлом '{System.IO.Path.GetFileName(file)}': {ex.Message}");
+                errors.Add(IsEnglish 
+                    ? $"IO error processing file '{System.IO.Path.GetFileName(file)}': {ex.Message}" 
+                    : $"Ошибка ввода-вывода при работе с файлом '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
             catch (UnauthorizedAccessException ex)
             {
                 _services.Logger.LogError(ex, "Access Denied processing file {FilePath}", file);
-                errors.Add($"Ошибка доступа к файлу '{System.IO.Path.GetFileName(file)}': {ex.Message}");
+                errors.Add(IsEnglish 
+                    ? $"Access denied for file '{System.IO.Path.GetFileName(file)}': {ex.Message}" 
+                    : $"Ошибка доступа к файлу '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
             catch (Exception ex)
             {
                 _services.Logger.LogError(ex, "Error processing file {FilePath}", file);
-                errors.Add($"Ошибка обработки файла '{System.IO.Path.GetFileName(file)}': {ex.Message}");
+                errors.Add(IsEnglish 
+                    ? $"Error processing file '{System.IO.Path.GetFileName(file)}': {ex.Message}" 
+                    : $"Ошибка обработки файла '{System.IO.Path.GetFileName(file)}': {ex.Message}");
             }
         }
 
@@ -174,7 +297,7 @@ namespace MSOfficeAuthors.ViewModels
         private void Clear()
         {
             Entries.Clear();
-            UpdateStatus("Список очищен");
+            UpdateStatus(IsEnglish ? "List cleared" : "Список очищен");
         }
 
         private bool CanClear() => Entries.Any();
@@ -194,18 +317,26 @@ namespace MSOfficeAuthors.ViewModels
                 
                 if (errors.Any() && MessageBoxAsync != null)
                 {
-                    await MessageBoxAsync("Предупреждение", "Изменения сохранены, но при перезагрузке возникли ошибки:\n" + string.Join("\n", errors.Take(5)));
+                    await MessageBoxAsync(
+                        IsEnglish ? "Warning" : "Предупреждение", 
+                        IsEnglish 
+                            ? "Changes saved, but errors occurred during reload:\n" + string.Join("\n", errors.Take(5))
+                            : "Изменения сохранены, но при перезагрузке возникли ошибки:\n" + string.Join("\n", errors.Take(5)));
                 }
                 else if (MessageBoxAsync != null)
                 {
-                    await MessageBoxAsync("Успех", "Изменения успешно сохранены и файлы перезагружены!");
+                    await MessageBoxAsync(
+                        IsEnglish ? "Success" : "Успех", 
+                        IsEnglish 
+                            ? "Changes successfully saved and files reloaded!" 
+                            : "Изменения успешно сохранены и файлы перезагружены!");
                 }
                 
-                UpdateStatus("Изменения сохранены");
+                UpdateStatus(IsEnglish ? "Changes saved" : "Изменения сохранены");
             }
             catch (Exception ex)
             {
-                await ReportErrorAsync(ex, "Ошибка при сохранении");
+                await ReportErrorAsync(ex, IsEnglish ? "Error saving" : "Ошибка при сохранении");
             }
         }
 
@@ -218,7 +349,7 @@ namespace MSOfficeAuthors.ViewModels
             
             ReplaceAuthors(MassReplaceFrom, MassReplaceTo);
             
-            UpdateStatus($"Заменено для '{MassReplaceFrom}'");
+            UpdateStatus(IsEnglish ? $"Replaced for '{MassReplaceFrom}'" : $"Заменено для '{MassReplaceFrom}'");
         }
 
         [RelayCommand(CanExecute = nameof(CanDeleteAll))]
@@ -229,7 +360,7 @@ namespace MSOfficeAuthors.ViewModels
                 entry.NewAuthorName = string.Empty;
             }
             
-            UpdateStatus("Все авторы помечены на удаление");
+            UpdateStatus(IsEnglish ? "All authors marked for deletion" : "Все авторы помечены на удаление");
         }
 
         private bool CanDeleteAll() => Entries.Any();
@@ -266,7 +397,7 @@ namespace MSOfficeAuthors.ViewModels
 
             if (showMessageBox && MessageBoxAsync != null)
             {
-                await MessageBoxAsync("Ошибка", message);
+                await MessageBoxAsync(IsEnglish ? "Error" : "Ошибка", message);
             }
             
             LogMessage(context, true);
@@ -279,7 +410,6 @@ namespace MSOfficeAuthors.ViewModels
             else
                 _services.Logger.LogInformation("{Context}: {Message}", nameof(MainViewModel), message);
         }
-
 
         private bool CanMassReplace() => !string.IsNullOrEmpty(MassReplaceFrom);
 

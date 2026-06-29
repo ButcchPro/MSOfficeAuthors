@@ -153,23 +153,33 @@
 
     <Grid Classes="MainContent" Margin="24,16,24,20" RowDefinitions="Auto, Auto, Auto, *, Auto">
         
-        <!-- ROW 0: Заголовок и переключатель темы -->
+        <!-- ROW 0: Заголовок и переключатели темы/языка -->
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,4,0,20">
             <StackPanel Grid.Column="0" Spacing="4">
                 <TextBlock Text="MS Office Authors" FontSize="26" FontWeight="Bold" Foreground="{DynamicResource CustomTitleColor}"/>
-                <TextBlock Text="Профессиональный менеджер метаданных и авторов документов Office" FontSize="12" Opacity="0.5" FontWeight="Medium"/>
+                <TextBlock Text="{Binding L10nSubtitle}" FontSize="12" Opacity="0.5" FontWeight="Medium"/>
             </StackPanel>
             
-            <Button Grid.Column="1" 
-                    Command="{Binding ToggleThemeCommand}" 
-                    Content="{Binding ThemeToggleText}"
-                    Width="42" Height="42"
-                    Padding="0"
-                    CornerRadius="21"
-                    FontSize="18"
-                    ToolTip.Tip="Переключить тему оформления"
-                    VerticalAlignment="Center"
-                    HorizontalAlignment="Right"/>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <!-- Кнопка выбора языка -->
+                <Button Command="{Binding ToggleLanguageCommand}" 
+                        Content="{Binding LangToggleText}"
+                        Width="42" Height="42"
+                        Padding="0"
+                        CornerRadius="21"
+                        FontSize="13"
+                        FontWeight="Bold"
+                        ToolTip.Tip="{Binding L10nTooltipLanguage}"/>
+
+                <!-- Кнопка переключения темы -->
+                <Button Command="{Binding ToggleThemeCommand}" 
+                        Content="{Binding ThemeToggleText}"
+                        Width="42" Height="42"
+                        Padding="0"
+                        CornerRadius="21"
+                        FontSize="18"
+                        ToolTip.Tip="{Binding L10nTooltipTheme}"/>
+            </StackPanel>
         </Grid>
         
         <!-- ROW 1: Главная панель инструментов (Toolbar) -->
@@ -177,12 +187,12 @@
             <DockPanel>
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="12">
                     <Button Command="{Binding AddFilesCommand}" 
-                            Content="➕  Добавить файлы" 
+                            Content="{Binding L10nAddFiles}" 
                             Classes="Primary" />
                     <Button Command="{Binding SaveCommand}" 
-                            Content="💾  Сохранить изменения" />
+                            Content="{Binding L10nSaveChanges}" />
                     <Button Command="{Binding ClearCommand}" 
-                            Content="🧹  Очистить список" />
+                            Content="{Binding L10nClearList}" />
                 </StackPanel>
             </DockPanel>
         </suki:GlassCard>
@@ -190,16 +200,16 @@
         <!-- ROW 2: Панель массовых действий -->
         <suki:GlassCard Grid.Row="2" Margin="0,0,0,16" Padding="20,16">
             <StackPanel Spacing="10">
-                <TextBlock Text="⚡ Массовые действия" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SukiPrimaryColorBrush}"/>
+                <TextBlock Text="{Binding L10nMassActions}" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource SukiPrimaryColorBrush}"/>
                 <Grid Classes="MassActionGrid" ColumnDefinitions="*, *, 180" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="8" HorizontalAlignment="Stretch">
                     <!-- Заголовки -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Найти исходного автора:" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Заменить на новое имя:" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding L10nFindOriginal}" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding L10nReplaceWith}" FontSize="11" Opacity="0.6" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
                     
                     <!-- Кнопка "Удалить всё" -->
                     <Button Grid.Row="0" Grid.Column="2" 
                             HorizontalAlignment="Stretch"
-                            Content="🗑️  Удалить все" 
+                            Content="{Binding L10nDeleteAll}" 
                             Classes="Danger"
                             Command="{Binding DeleteAllCommand}" />
 
@@ -208,16 +218,16 @@
                               HorizontalAlignment="Stretch"
                               SelectedItem="{Binding MassReplaceFrom}" 
                               ItemsSource="{Binding UniqueOriginalAuthors}" 
-                              PlaceholderText="Выберите имя для замены..."/>
+                              PlaceholderText="{Binding L10nPlaceholderSelect}"/>
 
                     <TextBox Grid.Row="1" Grid.Column="1" 
                              HorizontalAlignment="Stretch"
                              Text="{Binding MassReplaceTo}" 
-                             Watermark="Введите новое имя автора..."/>
+                             Watermark="{Binding L10nWatermarkNewName}"/>
 
                     <Button Grid.Row="1" Grid.Column="2" 
                             HorizontalAlignment="Stretch"
-                            Content="🔄  Заменить всё" 
+                            Content="{Binding L10nReplaceAll}" 
                             Classes="Primary"
                             Command="{Binding MassReplaceCommand}" />
                 </Grid>
@@ -237,10 +247,10 @@
                           RowHeight="38"
                           Background="Transparent">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Файл" Binding="{Binding FileName}" IsReadOnly="True" Width="280"/>
-                        <DataGridTextColumn Header="Тип" Binding="{Binding Type}" IsReadOnly="True" Width="100"/>
-                        <DataGridTextColumn Header="Оригинальное имя" Binding="{Binding OriginalAuthorName}" IsReadOnly="True" Width="1.5*"/>
-                        <DataGridTextColumn Header="Новое имя" Binding="{Binding NewAuthorName}" Width="2*"/>
+                        <DataGridTextColumn Header="{Binding DataContext.L10nHeaderFile, RelativeSource={RelativeSource AncestorType=DataGrid}}" Binding="{Binding FileName}" IsReadOnly="True" Width="280"/>
+                        <DataGridTextColumn Header="{Binding DataContext.L10nHeaderType, RelativeSource={RelativeSource AncestorType=DataGrid}}" Binding="{Binding Type}" IsReadOnly="True" Width="100"/>
+                        <DataGridTextColumn Header="{Binding DataContext.L10nHeaderOriginal, RelativeSource={RelativeSource AncestorType=DataGrid}}" Binding="{Binding OriginalAuthorName}" IsReadOnly="True" Width="1.5*"/>
+                        <DataGridTextColumn Header="{Binding DataContext.L10nHeaderNew, RelativeSource={RelativeSource AncestorType=DataGrid}}" Binding="{Binding NewAuthorName}" Width="2*"/>
                     </DataGrid.Columns>
                 </DataGrid>
                 
@@ -253,12 +263,12 @@
                                HorizontalAlignment="Center" 
                                FontSize="50" 
                                Opacity="0.7"/>
-                    <TextBlock Text="Нет загруженных файлов" 
+                    <TextBlock Text="{Binding L10nNoFiles}" 
                                HorizontalAlignment="Center" 
                                FontSize="16" 
                                FontWeight="SemiBold"
                                Opacity="0.8"/>
-                    <TextBlock Text="Нажмите кнопку 'Добавить файлы', чтобы начать работу с документами" 
+                    <TextBlock Text="{Binding L10nNoFilesHint}" 
                                HorizontalAlignment="Center" 
                                FontSize="12" 
                                Opacity="0.5"/>
@@ -278,7 +288,7 @@
                                Opacity="0.85"/>
                 </StackPanel>
                 <TextBlock Grid.Column="1" 
-                           Text="v1.0.0" 
+                           Text="{Binding AppVersion}" 
                            FontSize="11" 
                            Opacity="0.4" 
                            FontWeight="Medium"
