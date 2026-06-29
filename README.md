@@ -6,7 +6,7 @@ Built on the **Avalonia UI** framework utilizing the **MVVM** pattern, modern **
 
 ## 📥 Downloads
 
-Download the latest pre-built binaries for your platform ((Portable, no installation required)):
+Download the latest pre-built binaries for your platform (portable, no installation required):
 
 * 💻 **Windows x64:** [MSOfficeAuthors_Windows_x64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_x64.zip)
 * 📱 **Windows ARM64:** [MSOfficeAuthors_Windows_ARM64.zip](https://github.com/ButcchPro/MSOfficeAuthors/releases/download/v1.0.1/MSOfficeAuthors_Windows_ARM64.zip)
